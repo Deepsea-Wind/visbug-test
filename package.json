@@ -1,0 +1,26 @@
+{
+  "name": "visbug",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "bundle:prod": "rollup -c --environment build:prod",
+    "dev": "browser-sync start --server \"app\" --files \"app/index.html\" --no-open --no-notify --no-ui --no-ghost-mode",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lyince",
+  "license": "ISC",
+  "dependencies": {
+    "construct-style-sheets-polyfill": "^2.4.2"
+  },
+  "devDependencies": {
+    "rollup": "^2.7.2",
+    "browser-sync": "^2.26.13",
+    "rollup-plugin-serve": "^1.1.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-postcss": "^3.1.0",
+    "rollup-plugin-terser": "^5.3.0",
+    "postcss-preset-env": "^6.7.0",
+    "postcss-import": "^12.0.1"
+  }
+}

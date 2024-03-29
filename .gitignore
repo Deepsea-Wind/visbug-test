@@ -1,0 +1,12 @@
+sub-modules
+sub-modules/*
+.cache
+.idea/
+dist/
+package-lock.json
+.vscode/
+.gitmodules
+logs
+*.log
+node_modules
+.DS_Store

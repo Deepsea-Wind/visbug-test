@@ -1,0 +1,211 @@
+@import "_variables.css";
+
+:host {
+   & .pixel-match-page {
+       position: fixed;
+       left: 0;
+       top: 0;
+       right: 0;
+       bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      z-index: var(--layer-2);
+     }
+
+     & .pixel-match {
+      width: calc(100% - 100px);
+      padding: 20px;
+      border: 1px solid brown;
+      border-radius: 6px;
+      height: calc(100% - 100px);
+      transition: all .3s;
+    }
+    & .pixel-match-block {
+      height: calc(50% - 10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    & .match-img-origin, & .match-img-page {
+      border: 1px solid brown;
+      width: calc(50% - 10px);
+      height: 100%;
+      overflow: hidden;
+    }
+
+& .hover-mask {
+  position: relative;
+}
+& .hover-mask:hover svg {
+  display: block;
+}
+& .hover-mask svg:hover {
+  width: 100px;
+  height: 100px;
+}
+& .hover-mask:hover::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.2); /* 半透明黑色背景 */
+}
+& .pixel-match-block svg {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  top: 50%;
+  left: 50%;
+  transition: all .3s;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  display: none;
+}
+
+    & .pixel-match-result {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      height: calc(50% - 10px);
+    }
+
+    & .match-operator {
+       width: calc(50% - 10px);
+      border: 1px solid brown;
+      /*color: var(--theme-text_color);*/
+        padding-top: 20px;
+    }
+
+    & .operator-line {
+      display: flex;
+      align-items: center;
+      line-height: 35px;
+      padding: 0 20px;
+      font-weight: 500;
+    }
+
+    & .operator-line span {
+      margin-right: 10px;
+    }
+
+    & .slider-container {
+      width: 300px;
+      position: relative;
+      padding-top: 5px;
+    }
+
+    & .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 15px;
+      background: #d3d3d3;
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    & .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 25px;
+      height: 25px;
+      background: hsl(267, 100%, 58%);
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+    }
+
+    & .slider::-moz-range-thumb {
+      width: 25px;
+      height: 25px;
+      background: hsl(267, 100%, 58%);
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+    }
+
+    & .slider-value {
+      text-align: center;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+
+    & img[src=""], & img:not([src]){
+      opacity: 0;
+      border:none;
+      visibility: hidden;
+      max-width: none;
+    }
+
+    & .visbug-magnifier {
+      display: none;
+      /* 当元素祖先的 transform, perspective 或 filter 属性非 none 时，容器由视口改为该祖先 */
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+      z-index: var(--layer-top);
+    }
+
+    & .visbug-magnifier img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    & .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+
+    & .close-btn:hover {
+      opacity: 1;
+    }
+
+    & .close-icon {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    & .close-icon::before,
+    & .close-icon::after {
+      content: '';
+      position: absolute;
+      width: 2px;
+      height: 20px;
+      background-color: white;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    & .close-icon::before {
+      transform: rotate(45deg);
+    }
+
+    & .close-icon::after {
+      transform: rotate(-45deg);
+    }
+    & #diffCanvas:hover {
+      cursor: -webkit-zoom-in;
+    }
+}
