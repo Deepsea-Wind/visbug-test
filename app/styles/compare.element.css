@@ -15,11 +15,9 @@
      }
 
      & .pixel-match {
-      width: calc(100% - 100px);
+      width: calc(100% - 40px);
       padding: 20px;
-      border: 1px solid brown;
-      border-radius: 6px;
-      height: calc(100% - 100px);
+      height: calc(100% - 40px);
       transition: all .3s;
     }
     & .pixel-match-block {
@@ -28,8 +26,31 @@
       align-items: center;
       justify-content: space-between;
     }
+
+    & .pixel-match-block .match-img-origin:after {
+      content: "原图";
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      padding: 5px;
+    }
+
+    & .pixel-match-block .match-img-page:after {
+      content: "对比图";
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      padding: 5px;
+    }
+
     & .match-img-origin, & .match-img-page {
-      border: 1px solid brown;
+      position: relative;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
       width: calc(50% - 10px);
       height: 100%;
       overflow: hidden;
@@ -38,6 +59,11 @@
 & .hover-mask {
   position: relative;
 }
+
+& .hover-mask .ui-upload-operate {
+  display: none !important;
+}
+
 & .hover-mask:hover svg {
   display: block;
 }
@@ -66,6 +92,18 @@
   display: none;
 }
 
+  & .pixel-match-block .ui-upload-operate {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+  }
+
+  & .ui-upload-operate button:not(:first-child) {
+    margin-left: 10px;
+  }
+
     & .pixel-match-result {
       display: flex;
       justify-content: space-between;
@@ -75,8 +113,8 @@
 
     & .match-operator {
        width: calc(50% - 10px);
-      border: 1px solid brown;
-      /*color: var(--theme-text_color);*/
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
         padding-top: 20px;
     }
 

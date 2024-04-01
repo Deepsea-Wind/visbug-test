@@ -43,6 +43,10 @@ const hidePlane = () => {
 // 节点选择触发生成截图 （中控如果有html2canvas）
 const htmlToImg = (els) => {
   console.log("selected", els);
+  if (!els.length) {
+    alert("请先选择需要截图的元素")
+    return Promise.resolve();
+  }
   return new Promise((resolve, reject) => {
     const option = {
       name: "元素截图",

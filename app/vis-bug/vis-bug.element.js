@@ -89,7 +89,7 @@ export default class VisBug extends HTMLElement {
 
   clearUp() {
     Array.from(document.body.children)
-      .filter(node => node.nodeName.includes('VISBUG'))
+      .filter(node => node.nodeName.includes('VISBUG') || node.nodeName.includes('VIS-BUG'))
       .forEach(el => el.remove())
 
     this.teardown();

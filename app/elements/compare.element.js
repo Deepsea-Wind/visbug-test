@@ -6,11 +6,13 @@ import { toDelete } from "../vis-bug/vis-bug.icons"
 export class Compare extends HTMLElement {
    constructor() {
      super();
-     this.loadedCount = 0;
+     this.mode = "";
      this.$shadow = this.attachShadow({ mode: "closed" })
      this.closeOverlay = this.closeOverlay.bind(this)
      this.showMagnifier = this.showMagnifier.bind(this)
      this.handleHtmlToImg = this.handleHtmlToImg.bind(this)
+     this.handleMatch = this.handleMatch.bind(this)
+      this.handleDelete = this.handleDelete.bind(this)
    }
 
   connectedCallback() {
@@ -18,13 +20,25 @@ export class Compare extends HTMLElement {
      this.$shadow.adoptedStyleSheets = [CompareStyles]
      $('.close-btn', this.$shadow)[0].addEventListener('click', this.closeOverlay)
      $('.visbug-diffCanvas', this.$shadow)[0].addEventListener('click', this.showMagnifier)
-    $('#ui-upload-btn', this.$shadow)[0].addEventListener('click', this.handleHtmlToImg)
-     this.adjustImage()
+     $('#ui-upload-paste', this.$shadow)[0].addEventListener('click', () => this.handlePaste("#uiImage", true,".match-img-origin"))
+     $('#ui-upload-file', this.$shadow)[0].addEventListener('click', () => this.handleUploadFile("#uiImage", true,".match-img-origin"))
+     $('#page-upload-paste', this.$shadow)[0].addEventListener('click', () => this.handlePaste("#pageImage", false, ".match-img-page"))
+     $('#page-upload-file', this.$shadow)[0].addEventListener('click', () => this.handleUploadFile("#pageImage", false, ".match-img-page"))
+     $('#page-upload-select', this.$shadow)[0].addEventListener('click', this.handleHtmlToImg)
+     $('#match-button', this.$shadow)[0].addEventListener('click', this.handleMatch)
+     $(".delete-svg", this.$shadow).on('click', this.handleDelete)
   }
 
   disconnectedCallback() {
     $('.close-btn', this.$shadow)[0].removeEventListener('click', this.closeOverlay)
     $('.visbug-diffCanvas', this.$shadow)[0].removeEventListener('click', this.showMagnifier)
+    $('#ui-upload-paste', this.$shadow)[0].removeEventListener('click', () => this.handlePaste("#uiImage", true,".match-img-origin"))
+    $('#ui-upload-file', this.$shadow)[0].removeEventListener('click', () => this.handleUploadFile("#uiImage", true,".match-img-origin"))
+    $('#page-upload-paste', this.$shadow)[0].removeEventListener('click', () => this.handlePaste("#pageImage", false, ".match-img-page"))
+    $('#page-upload-file', this.$shadow)[0].removeEventListener('click', () => this.handleUploadFile("#pageImage", false, ".match-img-page"))
+    $('#page-upload-select', this.$shadow)[0].removeEventListener('click', this.handleHtmlToImg)
+    $('#match-button', this.$shadow)[0].removeEventListener('click', this.handleMatch)
+    $(".delete-svg", this.$shadow).off('click', this.handleDelete)
   }
 
   closeOverlay() {
@@ -56,14 +70,7 @@ export class Compare extends HTMLElement {
     const originImgContainer = $('#match-img-origin', this.$shadow)[0];
     const uiImage = $('#uiImage', this.$shadow)[0];
     const pageImage = $('#pageImage', this.$shadow)[0];
-    $(uiImage).on('load', () => this.onImgLoad(originImgContainer, uiImage, pageImage))
-    $(pageImage).on('load', () => this.onImgLoad(originImgContainer, uiImage, pageImage))
-  }
-
-  onImgLoad(originImgContainer, uiImage, pageImage) {
-    this.loadedCount++
-    if (this.loadedCount === 2) {
-       console.log("两张图片加载完毕");
+    $(uiImage).on('load', () => {
       const mode = this.adjustMode(uiImage, originImgContainer.clientWidth, originImgContainer.clientHeight)
       if (mode === "width") {
         console.log("图片优先取宽度适应");
@@ -71,25 +78,15 @@ export class Compare extends HTMLElement {
         uiImage.style.height = "auto"
         pageImage.style.width = "100%"
         pageImage.style.height = "auto"
-        // uiImage.width = originImgContainer.clientWidth;
-        // uiImage.height = "auto"
-        // pageImage.width = originImgContainer.clientWidth;
-        // pageImage.height = "auto"
       } else {
         console.log("图片优先取高度适应");
         uiImage.style.width = "auto"
         uiImage.style.height = "100%"
         pageImage.style.width = "auto"
         pageImage.style.height = "100%"
-        // uiImage.height = originImgContainer.clientHeight;
-        // uiImage.width = "auto"
-        // pageImage.height = originImgContainer.clientHeight;
-        // pageImage.width = "auto"
       }
-      this.loadedCount = 0;
-      this.pixelMatchMethod(uiImage, pageImage, mode)
-      this.listenRatio(uiImage, pageImage, mode)
-    }
+      this.mode = mode
+    })
   }
 
   adjustMode(img, width = window.innerWidth, height = window.innerHeight) {
@@ -167,27 +164,131 @@ export class Compare extends HTMLElement {
    handleHtmlToImg() {
      this.htmlToImgMethod().then((imgSrc) => {
         if (imgSrc) {
-           $('#uiImage', this.$shadow)[0].src = imgSrc
-           this.adjustImage()
+          const pageImage = $('#pageImage', this.$shadow)[0];
+          pageImage.src = imgSrc
+          $(".match-img-page", this.$shadow)[0].classList.add('hover-mask')
+          if (this.mode) {
+            console.log("已经上传ui图");
+            return;
+          }
+          const originImgContainer = $('#match-img-origin', this.$shadow)[0];
+          $(pageImage).on('load', () => {
+            const mode = this.adjustMode(pageImage, originImgContainer.clientWidth, originImgContainer.clientHeight)
+            if (mode === "width") {
+              console.log("dom节点优先取宽度适应");
+              pageImage.style.width = "100%"
+              pageImage.style.height = "auto"
+            } else {
+              console.log("dom节点优先取高度适应");
+              pageImage.style.width = "auto"
+              pageImage.style.height = "100%"
+            }
+          })
         }
      }).catch(() => {
        alert('截图获取失败，请稍后重试或联系管理员')
      })
    }
 
+   async handlePaste(imgContainer, needAdjust = true, parent) {
+     try {
+       const container = $(imgContainer, this.$shadow)[0];
+       // 读取剪贴板内容
+       const items = await navigator.clipboard.read();
+       // 遍历剪贴板中的每一项
+       for (const item of items) {
+         // 如果是图片类型的数据
+         if (item.types.includes('image/png') || item.types.includes('image/jpeg')) {
+           // 读取图片数据
+           const blob = await item.getType('image/png' || 'image/jpeg');
+           const imageUrl = URL.createObjectURL(blob);
+           container.src = imageUrl;
+           needAdjust && this.adjustImage();
+           if (parent) {
+             $(parent, this.$shadow)[0].classList.add('hover-mask');
+           }
+         }
+       }
+     } catch (error) {
+       alert('Failed to read clipboard image:', error);
+     }
+   }
+
+   handleUploadFile(imgContainer, needAdjust = true, parent) {
+      const fileInput = $('#fileInput', this.$shadow)[0];
+      fileInput.click();
+      fileInput.onchange = () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        if (!file.type.includes('image')) {
+          alert('请选择图片文件');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            $(imgContainer, this.$shadow)[0].src = img.src;
+            needAdjust && this.adjustImage();
+            if (parent) {
+              $(parent, this.$shadow)[0].classList.add('hover-mask');
+            }
+          };
+        };
+        reader.readAsDataURL(file);
+      };
+   }
+
+   handleMatch() {
+     const uiImage = $('#uiImage', this.$shadow)[0];
+     const pageImage = $('#pageImage', this.$shadow)[0];
+     this.pixelMatchMethod(uiImage, pageImage, this.mode)
+     this.listenRatio(uiImage, pageImage, this.mode)
+   }
+
+   handleDelete(e) {
+     const target = e.target;
+     const type = target.parentNode.parentNode.id;
+     let parent;
+     let img;
+     switch (type) {
+        case "ui-delete":
+          parent = $('.match-img-origin', this.$shadow)[0];
+          img = $('img', parent)[0];
+          break;
+        case "page-delete":
+          parent = $('.match-img-page', this.$shadow)[0];
+          img = $('img', parent)[0];
+          break;
+          default:
+            break;
+     }
+     if (img) img.src = "";
+     parent && parent.classList.remove('hover-mask');
+   }
+
   render() {
     return `
      <div class="pixel-match-page">
+     <input type="file" id="fileInput" style="display:none;">
      <div class="pixel-match">
 			<div class="pixel-match-block">
 				<div class="match-img-origin" id="match-img-origin">
-				    ${toDelete}
-<!--				    ../demo/img/origin-ui.png-->
+				<div class="ui-upload-operate">
+				 <button id="ui-upload-paste">粘贴</button>
+				  <button id="ui-upload-file">上传</button>
+        </div>
+				    <div class="delete-svg" id="ui-delete">${toDelete}</div>
 					  <img id="uiImage" src="" alt="UI Image">
 				</div>
 				<div class="match-img-page">
-			     	${toDelete}
-<!--			     	../demo/img/page-ui.jpeg-->
+				 <div class="ui-upload-operate">
+				 <button id="page-upload-paste">粘贴</button>
+				  <button id="page-upload-file">上传</button>
+				  <button id="page-upload-select">上传选中节点</button>
+        </div>
+			     	<div class="delete-svg" id="page-delete">${toDelete}</div>
 					  <img id="pageImage" src="" alt="Page Image">
 				</div>
 			</div>
@@ -196,6 +297,9 @@ export class Compare extends HTMLElement {
 					<canvas class="visbug-diffCanvas" id="diffCanvas" />
 				</div>
 				<div class="match-operator">
+				  <div class="operator-line">
+				  <button id="match-button">开始比对</button>
+          </div>
 					<div class="operator-line" id="mismatch">Mismatched pixels: -</div>
 					<div class="operator-line" id="similarity-num">Similarity ratio: -</div>
 					<div class="operator-line">
@@ -205,7 +309,6 @@ export class Compare extends HTMLElement {
 						</div>
 						<div class="slider-value" id="sliderValue">0.2</div>
 					</div>
-					 <button style="position: absolute" id="ui-upload-btn">上传DOM截图</button>
 				</div>
 			</div>
 		</div>
