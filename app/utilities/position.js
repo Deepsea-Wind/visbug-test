@@ -261,7 +261,7 @@ export const createMeasurements = ({ $anchor, $target }) => {
 
   measurements.map((measurement) => Object.assign(measurement, {
     d: Math.round(measurement.d.toFixed(1) * 100) / 100
-  })).forEach((measurement) => {
+  })).filter((m) => Math.round(m.d) > 0).forEach((measurement) => {
     const $measurement = document.createElement("visbug-distance")
     $measurement.position = {
       line_model: measurement,

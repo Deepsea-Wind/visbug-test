@@ -1,0 +1,35 @@
+{
+  "name": "visBug",
+  "version": "1.0",
+  "manifest_version": 3,
+  "icons": {
+    "128": "icons/visbug.png"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Click Me"
+    //    "default_popup": "popup.html"
+  },
+    "content_scripts": [{
+      "js": ["scripts/init-env.js"],
+      "matches": ["<all_urls>"]
+//      "run_at": "document_start"
+    }],
+  "web_accessible_resources": [
+    {
+      "resources": [ "scripts/*" ],
+      "matches": [ "<all_urls>" ]
+    }
+  ],
+  //  "host_permissions": ["<all_urls>"],
+  "permissions": [
+    "tabs",
+    "scripting",
+    "storage",
+    "activeTab"
+  ]
+  //插件权限设置
+}

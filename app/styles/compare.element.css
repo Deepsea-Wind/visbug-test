@@ -1,6 +1,11 @@
 @import "_variables.css";
 
 :host {
+   & .loading {
+     pointer-events: none; /* 禁用点击事件 */
+     opacity: 0.5; /* 设置透明度 */
+     cursor: progress; /* 设置鼠标指针为加载指针 */
+   }
    & .pixel-match-page {
        position: fixed;
        left: 0;

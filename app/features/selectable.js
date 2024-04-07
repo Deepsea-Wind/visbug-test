@@ -46,6 +46,7 @@ export function Selectable(visbug) {
     e.preventDefault()
 
     if (!e.shiftKey) {
+      e.stopPropagation();
       clearMeasurements();
       unselect_all({ silent:true })
     }
@@ -55,6 +56,8 @@ export function Selectable(visbug) {
 
 
   const on_dblclick = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
     const $target = deepElementFromPoint(e.clientX, e.clientY);
     if (isOffBounds($target)) return
     EditText([$target])
@@ -290,6 +293,7 @@ export function Selectable(visbug) {
   }
 
   return {
+    listen,
     unselect_all,
     onSelectedUpdate,
     removeSelectedCallback,

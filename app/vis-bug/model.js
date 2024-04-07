@@ -31,4 +31,9 @@ export const VisBugModel = {
     label:       'ui比照',
     description: '像素对比(s)',
   },
+  b: {
+    tool:        'switch',
+    icon:        Icons._switch,
+    label:       '测量开关',
+  },
 };

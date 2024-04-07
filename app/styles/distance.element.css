@@ -40,7 +40,7 @@
   background: hsl(var(--line-color) / 75%);
   border: 1px solid hsl(var(--line-color));
   border-radius: 1em;
-  font-size: 0.7em;
+  font-size: 0.5em;
   font-weight: bold;
   line-height: 1.1;
   font-family: system-ui;

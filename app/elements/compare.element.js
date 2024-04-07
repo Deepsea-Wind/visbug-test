@@ -162,6 +162,8 @@ export class Compare extends HTMLElement {
    }
 
    handleHtmlToImg() {
+     const button = $('#page-upload-select', this.$shadow)[0];
+     button.classList.add('loading');
      this.htmlToImgMethod().then((imgSrc) => {
         if (imgSrc) {
           const pageImage = $('#pageImage', this.$shadow)[0];
@@ -187,6 +189,8 @@ export class Compare extends HTMLElement {
         }
      }).catch(() => {
        alert('截图获取失败，请稍后重试或联系管理员')
+     }).finally(() => {
+       button.classList.remove('loading');
      })
    }
 

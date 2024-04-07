@@ -1,6 +1,6 @@
 import resolve  from 'rollup-plugin-node-resolve'
 import postcss  from 'rollup-plugin-postcss'
-// import {terser} from 'rollup-plugin-terser'
+import {terser} from 'rollup-plugin-terser'
 
 const is_prod = process.env.build === 'prod'
 
@@ -15,9 +15,9 @@ const dev_plugins = [
 ]
 
 const prod_plugins = [
-  // terser({
-  //   sourcemap: false,
-  // }),
+  terser({
+    sourcemap: false,
+  }),
 ]
 
 const plugins = is_prod
@@ -27,9 +27,9 @@ const plugins = is_prod
 export default {
   input: 'app/vis-bug/index.js',
   output: {
-    file:       is_prod ? 'app/build/bundle.min.js' : 'app/build/bundle.js',
+    file:       is_prod ? 'app/extension/scripts/bundle.min.js' : 'app/build/bundle.js',
     format:     'es',
-    sourcemap:  is_prod ? null : 'inline',
+    sourcemap:  is_prod ? "inline" : null,
   },
   plugins,
   watch: {

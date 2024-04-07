@@ -6,7 +6,7 @@ import "../elements/index"
 export default class VisBug extends HTMLElement {
    constructor() {
      super();
-
+     // 统一装配选中功能
      this.toolbar_model = VisBugModel;
      this.$shadow = this.attachShadow({ mode: "closed" });
      this.applyScheme = schemeRule(this.$shadow, VisBugStyle, VisBugLightStyles, VisBugDarkStyles);
@@ -18,9 +18,8 @@ export default class VisBug extends HTMLElement {
 
   connectedCallback() {
     this.setup();
-    // 统一装配选中功能
-    this.selectorEngine = Selectable(this)
-    this.toolSelected($('[data-tool="guides"]', this.$shadow)[0])
+    this.selectorEngine = Selectable(this);
+    this.toolSelected($('[data-tool="switch"]', this.$shadow)[0])
   }
 
   disconnectedCallback() {
@@ -111,12 +110,28 @@ export default class VisBug extends HTMLElement {
     this.deactivate_feature = Compare(this.selectorEngine)
   }
 
+  switch() {
+    const main_ol = this.$shadow.querySelector('ol[vis-bug-ol]');
+    if (!this.switchFlag) {
+      this.switchFlag = true
+      main_ol.classList.add("vis-bug-toggle")
+      const { disconnect } = this.selectorEngine;
+      disconnect && disconnect();
+    } else {
+      this.switchFlag = false
+      main_ol.classList.remove("vis-bug-toggle")
+      const { listen } = this.selectorEngine;
+      listen && listen();
+    }
+    this.deactivate_feature = () => {}
+  }
+
   demoTip({key, tool, label, description}) {
-    return `
+    return  description ? `
       <aside ${tool}>
         <div>${label} - ${description}</div>
       </aside>
-    `
+    ` : ""
   }
 
   get activeTool() {
@@ -128,7 +143,7 @@ export default class VisBug extends HTMLElement {
       <ol vis-bug-ol>
         ${Object.entries(this.toolbar_model).reduce((list, [key, tool]) => `
           ${list}
-          <li aria-label="${tool.label} Tool" aria-description="${tool.description}" aria-hotkey="${key}" data-tool="${tool.tool}" data-active="${key == 'g'}">
+          <li aria-label="${tool.label} Tool" aria-description="${tool.description}" aria-hotkey="${key}" data-tool="${tool.tool}" data-active="${key == 'b'}">
             ${tool.icon}
             ${this.demoTip({key, ...tool})}
           </li>
